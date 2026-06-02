@@ -1,0 +1,1316 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Seismic Resilience Optimizer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #17211f;
+      --muted: #5e6c67;
+      --line: #d9e1dc;
+      --panel: #ffffff;
+      --panel-soft: #f6f8f5;
+      --field: #f9fbf8;
+      --brand: #1f7a68;
+      --brand-2: #0f5e85;
+      --warning: #c27a16;
+      --danger: #bd3b3b;
+      --safe: #23845d;
+      --shadow: 0 20px 50px rgba(26, 38, 34, .11);
+      --radius: 8px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, sans-serif;
+      background: #eef3f0;
+      color: var(--ink);
+      min-width: 320px;
+    }
+
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    .hidden { display: none !important; }
+
+    .auth-shell {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(360px, 480px);
+      background:
+        linear-gradient(90deg, rgba(16, 39, 35, .68), rgba(16, 39, 35, .16)),
+        url("https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1800&q=82") center / cover;
+    }
+
+    .auth-hero {
+      align-self: end;
+      padding: 56px;
+      color: white;
+      max-width: 850px;
+    }
+
+    .auth-hero h1 {
+      margin: 0 0 18px;
+      font-size: clamp(2.45rem, 6vw, 5.6rem);
+      line-height: .92;
+      letter-spacing: 0;
+      max-width: 760px;
+    }
+
+    .auth-hero p {
+      margin: 0;
+      max-width: 620px;
+      font-size: 1.04rem;
+      line-height: 1.65;
+      color: rgba(255,255,255,.86);
+    }
+
+    .auth-panel {
+      min-height: 100vh;
+      background: rgba(250, 252, 249, .94);
+      backdrop-filter: blur(18px);
+      padding: 42px;
+      display: flex;
+      align-items: center;
+      border-left: 1px solid rgba(255,255,255,.35);
+    }
+
+    .auth-card {
+      width: 100%;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 28px;
+      box-shadow: var(--shadow);
+    }
+
+    .brand-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .logo {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      background: var(--brand);
+      color: white;
+      border-radius: 8px;
+      font-weight: 800;
+    }
+
+    .brand-row strong { display: block; font-size: 1.05rem; }
+    .brand-row span { color: var(--muted); font-size: .86rem; }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      background: var(--panel-soft);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 5px;
+      margin-bottom: 20px;
+    }
+
+    .tab {
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      border-radius: 6px;
+      padding: 10px;
+      font-weight: 700;
+    }
+
+    .tab.active {
+      background: white;
+      color: var(--ink);
+      box-shadow: 0 3px 12px rgba(18, 32, 29, .08);
+    }
+
+    label { display: block; font-weight: 700; margin: 14px 0 7px; font-size: .9rem; }
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px 13px;
+      color: var(--ink);
+      background: var(--field);
+      outline: none;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--brand);
+      box-shadow: 0 0 0 3px rgba(31, 122, 104, .14);
+    }
+
+    textarea { resize: vertical; min-height: 88px; }
+
+    .btn {
+      border: 1px solid transparent;
+      border-radius: 8px;
+      padding: 11px 14px;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 44px;
+    }
+
+    .btn.primary { background: var(--brand); color: white; }
+    .btn.secondary { background: white; color: var(--ink); border-color: var(--line); }
+    .btn.ghost { background: transparent; color: var(--muted); border-color: transparent; }
+    .btn.danger { background: #fff4f1; color: var(--danger); border-color: #f0c2bb; }
+    .btn:disabled { opacity: .52; cursor: not-allowed; }
+    .full { width: 100%; }
+
+    .hint { color: var(--muted); font-size: .84rem; line-height: 1.45; margin-top: 12px; }
+    .error { color: var(--danger); font-size: .87rem; min-height: 20px; margin-top: 10px; }
+
+    .app-shell { min-height: 100vh; display: grid; grid-template-columns: 286px minmax(0, 1fr); }
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 24px 18px;
+      background: #152420;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .side-brand { display: flex; align-items: center; gap: 12px; padding: 0 8px 12px; }
+    .side-brand .logo { background: #37a88f; }
+    .side-brand span { display: block; color: rgba(255,255,255,.66); font-size: .8rem; }
+
+    .nav { display: grid; gap: 6px; }
+    .nav button {
+      border: 0;
+      border-radius: 8px;
+      padding: 12px;
+      text-align: left;
+      color: rgba(255,255,255,.76);
+      background: transparent;
+      font-weight: 700;
+    }
+
+    .nav button.active, .nav button:hover { background: rgba(255,255,255,.11); color: white; }
+
+    .user-box {
+      margin-top: auto;
+      padding: 14px;
+      background: rgba(255,255,255,.09);
+      border: 1px solid rgba(255,255,255,.13);
+      border-radius: 8px;
+    }
+
+    .user-box strong, .user-box span { display: block; overflow-wrap: anywhere; }
+    .user-box span { color: rgba(255,255,255,.68); font-size: .82rem; margin-top: 3px; }
+    .user-box .btn { margin-top: 12px; width: 100%; color: white; border-color: rgba(255,255,255,.22); }
+
+    .main { min-width: 0; }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      background: rgba(238, 243, 240, .88);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--line);
+      padding: 14px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .topbar h2 { margin: 0; font-size: 1.06rem; }
+    .top-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .content { padding: 26px 28px 44px; max-width: 1440px; margin: 0 auto; }
+
+    .section { display: none; }
+    .section.active { display: block; }
+
+    .overview-grid {
+      display: grid;
+      grid-template-columns: minmax(300px, 1.3fr) minmax(300px, .7fr);
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .hero-panel {
+      min-height: 330px;
+      border-radius: var(--radius);
+      overflow: hidden;
+      background:
+        linear-gradient(90deg, rgba(12,32,29,.78), rgba(12,32,29,.2)),
+        url("https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1500&q=82") center / cover;
+      color: white;
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      box-shadow: var(--shadow);
+    }
+
+    .hero-panel h1 { margin: 0 0 12px; font-size: clamp(2rem, 4vw, 4rem); line-height: 1; }
+    .hero-panel p { max-width: 680px; margin: 0; color: rgba(255,255,255,.84); line-height: 1.6; }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: 0 10px 30px rgba(20, 33, 29, .07);
+      padding: 20px;
+    }
+
+    .panel h3 { margin: 0 0 12px; font-size: 1.05rem; }
+    .muted { color: var(--muted); }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(150px, 1fr));
+      gap: 14px;
+      margin: 18px 0;
+    }
+
+    .metric {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 16px;
+      min-height: 112px;
+    }
+
+    .metric span { color: var(--muted); font-size: .82rem; font-weight: 700; }
+    .metric strong { display: block; margin-top: 10px; font-size: 1.8rem; letter-spacing: 0; }
+
+    .assessment-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 360px;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .question-grid { display: grid; grid-template-columns: repeat(2, minmax(260px, 1fr)); gap: 14px; }
+    .question {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 16px;
+      min-height: 154px;
+    }
+
+    .question-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .question h4 { margin: 0; font-size: .96rem; line-height: 1.35; }
+    .badge {
+      white-space: nowrap;
+      border-radius: 999px;
+      padding: 5px 8px;
+      background: #ecf5f2;
+      color: var(--brand);
+      font-weight: 800;
+      font-size: .73rem;
+    }
+
+    .risk-output {
+      position: sticky;
+      top: 86px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .score-ring {
+      height: 210px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      background: conic-gradient(var(--brand) calc(var(--score) * 1%), #e3e9e5 0);
+      position: relative;
+    }
+
+    .score-ring::after {
+      content: "";
+      position: absolute;
+      inset: 20px;
+      background: white;
+      border-radius: 6px;
+    }
+
+    .score-ring div { position: relative; z-index: 1; text-align: center; }
+    .score-ring strong { display: block; font-size: 3rem; }
+    .score-ring span { color: var(--muted); font-weight: 700; }
+
+    .status {
+      padding: 12px;
+      border-radius: 8px;
+      font-weight: 800;
+      background: #fff7e8;
+      color: var(--warning);
+      border: 1px solid #f0d9a8;
+    }
+    .status.safe { background: #edf8f2; color: var(--safe); border-color: #b9dec9; }
+    .status.fail { background: #fff1ef; color: var(--danger); border-color: #efc2bb; }
+
+    .recommendations { display: grid; gap: 10px; margin-top: 12px; }
+    .rec {
+      border: 1px solid var(--line);
+      background: var(--panel-soft);
+      border-radius: 8px;
+      padding: 12px;
+      line-height: 1.45;
+    }
+
+    .bars { display: grid; gap: 10px; }
+    .bar-row { display: grid; grid-template-columns: 180px 1fr 42px; gap: 10px; align-items: center; }
+    .bar-label { font-size: .82rem; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .bar-track { height: 12px; background: #e7ede9; border-radius: 999px; overflow: hidden; }
+    .bar-fill { height: 100%; background: linear-gradient(90deg, var(--brand), var(--brand-2)); border-radius: 999px; }
+    .bar-score { font-weight: 800; font-size: .82rem; text-align: right; }
+
+    .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: white; }
+    table { width: 100%; border-collapse: collapse; min-width: 760px; }
+    th, td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th { background: var(--panel-soft); font-size: .8rem; color: var(--muted); text-transform: uppercase; }
+    tr:last-child td { border-bottom: 0; }
+
+    .scenario-grid, .profile-grid { display: grid; grid-template-columns: repeat(2, minmax(260px, 1fr)); gap: 14px; }
+    .mini-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+
+    .model-grid { display: grid; grid-template-columns: repeat(3, minmax(220px, 1fr)); gap: 14px; }
+    .model-output { display: grid; grid-template-columns: minmax(280px, .8fr) minmax(300px, 1.2fr); gap: 14px; margin-top: 14px; }
+    .risk-card {
+      border-radius: 8px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      background: var(--panel-soft);
+    }
+
+    .risk-card strong { display: block; font-size: 2.2rem; margin: 8px 0; }
+    .risk-card span { color: var(--muted); font-weight: 700; font-size: .84rem; }
+    .risk-card.safe { background: #edf8f2; border-color: #b9dec9; }
+    .risk-card.watch { background: #fff7e8; border-color: #f0d9a8; }
+    .risk-card.critical { background: #fff1ef; border-color: #efc2bb; }
+
+    .insight-list { display: grid; gap: 10px; }
+    .insight {
+      border: 1px solid var(--line);
+      background: white;
+      border-radius: 8px;
+      padding: 12px;
+      line-height: 1.45;
+    }
+
+    .range-row {
+      display: grid;
+      grid-template-columns: 1fr 52px;
+      gap: 10px;
+      align-items: center;
+    }
+
+    input[type="range"] { padding: 0; accent-color: var(--brand); }
+
+    .toast {
+      position: fixed;
+      right: 22px;
+      bottom: 22px;
+      background: #152420;
+      color: white;
+      padding: 12px 14px;
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      opacity: 0;
+      transform: translateY(12px);
+      pointer-events: none;
+      transition: .22s ease;
+      z-index: 20;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 1100px) {
+      .app-shell { grid-template-columns: 1fr; }
+      .sidebar { position: relative; height: auto; flex-direction: row; align-items: center; overflow-x: auto; }
+      .nav { display: flex; }
+      .nav button { white-space: nowrap; }
+      .user-box { margin: 0 0 0 auto; min-width: 220px; }
+      .assessment-grid, .overview-grid { grid-template-columns: 1fr; }
+      .risk-output { position: static; }
+    }
+
+    @media (max-width: 760px) {
+      .auth-shell { grid-template-columns: 1fr; }
+      .auth-hero { min-height: 42vh; padding: 28px; }
+      .auth-panel { min-height: auto; padding: 18px; }
+      .auth-card { padding: 20px; }
+      .content, .topbar { padding-left: 16px; padding-right: 16px; }
+      .question-grid, .metrics, .scenario-grid, .profile-grid, .model-grid, .model-output { grid-template-columns: 1fr; }
+      .sidebar { padding: 12px; display: block; }
+      .side-brand { margin-bottom: 10px; }
+      .nav { overflow-x: auto; padding-bottom: 8px; }
+      .user-box { margin-top: 10px; }
+      .topbar { align-items: flex-start; flex-direction: column; }
+      .bar-row { grid-template-columns: 1fr; gap: 5px; }
+      .bar-score { text-align: left; }
+    }
+  </style>
+</head>
+<body>
+  <div id="authShell" class="auth-shell">
+    <section class="auth-hero">
+      <h1>Seismic Resilience Optimizer</h1>
+      <p>Assess building vulnerability in seismic zones, simulate structural upgrades, and produce prioritized safety recommendations with a weighted resilience score.</p>
+    </section>
+    <aside class="auth-panel">
+      <div class="auth-card">
+        <div class="brand-row">
+          <div class="logo">SR</div>
+          <div><strong>Resilience Studio</strong><span>Secure local project workspace</span></div>
+        </div>
+        <div class="tabs">
+          <button class="tab active" data-auth-tab="login">Login</button>
+          <button class="tab" data-auth-tab="register">Create Account</button>
+        </div>
+        <form id="loginForm">
+          <label for="loginEmail">Email</label>
+          <input id="loginEmail" type="email" autocomplete="email" required placeholder="engineer@example.com">
+          <label for="loginPassword">Password</label>
+          <input id="loginPassword" type="password" autocomplete="current-password" required placeholder="Minimum 6 characters">
+          <button class="btn primary full" type="submit">Log In</button>
+          <p class="hint">Demo login: <strong>demo@seismic.local</strong> / <strong>demo123</strong></p>
+          <div id="loginError" class="error"></div>
+        </form>
+        <form id="registerForm" class="hidden">
+          <label for="registerName">Full Name</label>
+          <input id="registerName" required placeholder="Project Engineer">
+          <label for="registerEmail">Email</label>
+          <input id="registerEmail" type="email" autocomplete="email" required placeholder="engineer@example.com">
+          <label for="registerPassword">Password</label>
+          <input id="registerPassword" type="password" autocomplete="new-password" minlength="6" required placeholder="Minimum 6 characters">
+          <button class="btn primary full" type="submit">Create Account</button>
+          <div id="registerError" class="error"></div>
+        </form>
+      </div>
+    </aside>
+  </div>
+
+  <div id="appShell" class="app-shell hidden">
+    <aside class="sidebar">
+      <div class="side-brand">
+        <div class="logo">SR</div>
+        <div><strong>Seismic Lab</strong><span>Building analysis suite</span></div>
+      </div>
+      <nav class="nav" aria-label="Main navigation">
+        <button class="active" data-section="overview">Overview</button>
+        <button data-section="assessment">Assessment</button>
+        <button data-section="scenario">Scenario Builder</button>
+        <button data-section="advanced">Advanced Model</button>
+        <button data-section="reports">Reports</button>
+        <button data-section="profile">Profile</button>
+      </nav>
+      <div class="user-box">
+        <strong id="userName">Engineer</strong>
+        <span id="userEmail">engineer@example.com</span>
+        <button class="btn ghost" id="logoutBtn" type="button">Logout</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <h2 id="sectionTitle">Overview</h2>
+          <span class="muted" id="projectStamp">No saved assessment yet</span>
+        </div>
+        <div class="top-actions">
+          <button class="btn secondary" id="saveBtn" type="button">Save Assessment</button>
+          <button class="btn secondary" id="exportBtn" type="button">Export Report</button>
+          <button class="btn danger" id="resetBtn" type="button">Reset Inputs</button>
+        </div>
+      </header>
+
+      <div class="content">
+        <section id="overview" class="section active">
+          <div class="overview-grid">
+            <div class="hero-panel">
+              <h1>Design decisions, ranked by safety impact.</h1>
+              <p>Use weighted seismic criteria, site hazards, occupancy exposure, and structural detailing questions to identify the most efficient upgrades needed to reach the target resilience score.</p>
+            </div>
+            <div class="panel">
+              <h3>Project Setup</h3>
+              <label for="projectName">Project Name</label>
+              <input id="projectName" placeholder="Central Library Retrofit">
+              <label for="projectLocation">Location / Seismic Zone</label>
+              <input id="projectLocation" placeholder="Zone IV, near active fault">
+              <label for="buildingType">Building Type</label>
+              <select id="buildingType">
+                <option>Reinforced Concrete Frame</option>
+                <option>Steel Moment Frame</option>
+                <option>Masonry Bearing Wall</option>
+                <option>Mixed-use Podium</option>
+                <option>Industrial Shed</option>
+                <option>Hospital / Essential Facility</option>
+              </select>
+              <label for="notes">Inspection Notes</label>
+              <textarea id="notes" placeholder="Observed cracks, vertical irregularity, weak open ground storey, diaphragm discontinuity..."></textarea>
+            </div>
+          </div>
+          <div class="metrics">
+            <div class="metric"><span>Total Resilience Score</span><strong id="metricTrs">0.00</strong></div>
+            <div class="metric"><span>Adjusted Risk Index</span><strong id="metricRiskIndex">0</strong></div>
+            <div class="metric"><span>Performance Band</span><strong id="metricBand">-</strong></div>
+            <div class="metric"><span>Model Confidence</span><strong id="metricConfidence">0%</strong></div>
+          </div>
+          <div class="panel">
+            <h3>Score Distribution</h3>
+            <div class="bars" id="scoreBars"></div>
+          </div>
+        </section>
+
+        <section id="assessment" class="section">
+          <div class="assessment-grid">
+            <div>
+              <div class="panel" style="margin-bottom:14px">
+                <h3>Building Seismic Questions</h3>
+                <p class="muted">Select the current condition for each criterion. Items with higher weights create larger score movement when improved.</p>
+              </div>
+              <div class="question-grid" id="questions"></div>
+            </div>
+            <aside class="risk-output">
+              <div class="panel">
+                <div class="score-ring" id="scoreRing" style="--score:0">
+                  <div><strong id="scoreValue">0.00</strong><span>/ 10 TRS</span></div>
+                </div>
+                <div id="statusBox" class="status fail">Needs seismic improvement</div>
+                <div class="mini-actions">
+                  <button class="btn primary" id="optimizeBtn" type="button">Optimize</button>
+                  <button class="btn secondary" id="bestCaseBtn" type="button">Best Case</button>
+                </div>
+              </div>
+              <div class="panel">
+                <h3>Priority Recommendations</h3>
+                <div id="recommendations" class="recommendations"></div>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        <section id="scenario" class="section">
+          <div class="scenario-grid">
+            <div class="panel">
+              <h3>Rapid Scenario Controls</h3>
+              <label for="retrofitBudget">Retrofit Budget Level</label>
+              <select id="retrofitBudget">
+                <option value="basic">Basic life-safety interventions</option>
+                <option value="balanced">Balanced structural retrofit</option>
+                <option value="advanced">Advanced performance upgrade</option>
+              </select>
+              <label for="targetPerformance">Target Performance</label>
+              <select id="targetPerformance">
+                <option value="7.5">Approval Safety - 7.5</option>
+                <option value="8.5">Immediate Occupancy - 8.5</option>
+                <option value="9.2">Essential Facility - 9.2</option>
+              </select>
+              <label for="aftershockExposure">Aftershock / Fault Proximity</label>
+              <select id="aftershockExposure">
+                <option value="0">Normal regional exposure</option>
+                <option value="-0.25">Near-fault penalty</option>
+                <option value="-0.45">Active fault corridor penalty</option>
+              </select>
+              <button class="btn primary full" id="runScenarioBtn" type="button">Run Scenario</button>
+            </div>
+            <div class="panel">
+              <h3>Scenario Result</h3>
+              <div id="scenarioResult" class="recommendations"></div>
+            </div>
+          </div>
+          <div class="panel" style="margin-top:14px">
+            <h3>Additional Diagnostic Questions</h3>
+            <div class="question-grid" id="diagnostics"></div>
+          </div>
+        </section>
+
+        <section id="advanced" class="section">
+          <div class="panel" style="margin-bottom:14px">
+            <h3>Advanced Structural Risk Model</h3>
+            <p class="muted">Tune the weighted TRS with building geometry, code-era vulnerability, near-fault exposure, ground failure potential, and inspection confidence.</p>
+          </div>
+          <div class="model-grid">
+            <div class="panel">
+              <h3>Building Geometry</h3>
+              <label for="storeys">Number of Storeys</label>
+              <input id="storeys" type="number" min="1" max="80" value="5">
+              <label for="planArea">Approx. Floor Plate Area (m2)</label>
+              <input id="planArea" type="number" min="50" max="100000" value="1200">
+              <label for="yearBuilt">Year Built / Major Retrofit</label>
+              <input id="yearBuilt" type="number" min="1900" max="2035" value="2005">
+            </div>
+            <div class="panel">
+              <h3>Code and Site Exposure</h3>
+              <label for="codeEra">Design Code Era</label>
+              <select id="codeEra">
+                <option value="-0.45">Pre-code or unknown</option>
+                <option value="-0.25">Early seismic code</option>
+                <option value="0" selected>Modern code basis</option>
+                <option value="0.18">Performance-based design</option>
+              </select>
+              <label for="faultDistance">Distance to Active Fault</label>
+              <select id="faultDistance">
+                <option value="-0.40">0-5 km near-fault pulse zone</option>
+                <option value="-0.22">5-15 km near-fault influence</option>
+                <option value="-0.08" selected>15-50 km regional exposure</option>
+                <option value="0.04">More than 50 km</option>
+              </select>
+              <label for="importanceFactor">Importance Factor</label>
+              <select id="importanceFactor">
+                <option value="-0.18">Essential or emergency facility</option>
+                <option value="-0.10">High occupancy / public assembly</option>
+                <option value="0" selected>Ordinary occupancy</option>
+                <option value="0.05">Low occupancy</option>
+              </select>
+            </div>
+            <div class="panel">
+              <h3>Ground Failure and Confidence</h3>
+              <label for="groundFailure">Ground Failure Potential</label>
+              <select id="groundFailure">
+                <option value="-0.45">Liquefaction, landslide, or lateral spread likely</option>
+                <option value="-0.24">Moderate ground failure indicators</option>
+                <option value="-0.08" selected>Low but not fully excluded</option>
+                <option value="0.05">Geotechnically verified low risk</option>
+              </select>
+              <label for="documentationConfidence">Documentation Confidence</label>
+              <div class="range-row"><input id="documentationConfidence" type="range" min="20" max="100" value="70"><strong id="documentationConfidenceValue">70%</strong></div>
+              <label for="inspectionConfidence">Inspection Confidence</label>
+              <div class="range-row"><input id="inspectionConfidence" type="range" min="20" max="100" value="75"><strong id="inspectionConfidenceValue">75%</strong></div>
+            </div>
+          </div>
+          <div class="model-output">
+            <div id="advancedRiskCard" class="risk-card watch">
+              <span>Adjusted TRS</span>
+              <strong id="adjustedScore">0.00</strong>
+              <p id="advancedVerdict" class="muted">Model waiting for inputs.</p>
+            </div>
+            <div class="panel">
+              <h3>Engineering Interpretation</h3>
+              <div id="modelInsights" class="insight-list"></div>
+            </div>
+          </div>
+        </section>
+
+        <section id="reports" class="section">
+          <div class="panel">
+            <h3>Assessment Report</h3>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Criterion</th><th>Selected Condition</th><th>Score</th><th>Weight</th><th>Weighted Contribution</th></tr></thead>
+                <tbody id="reportRows"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="panel" style="margin-top:14px">
+            <h3>Export Preview</h3>
+            <textarea id="reportText" readonly style="min-height:260px"></textarea>
+          </div>
+        </section>
+
+        <section id="profile" class="section">
+          <div class="profile-grid">
+            <div class="panel">
+              <h3>Account</h3>
+              <label for="profileName">Name</label>
+              <input id="profileName">
+              <label for="profileOrg">Organization</label>
+              <input id="profileOrg" placeholder="Consultancy, municipality, university...">
+              <label for="profileRole">Role</label>
+              <select id="profileRole">
+                <option>Structural Engineer</option>
+                <option>Architect</option>
+                <option>Building Owner</option>
+                <option>Municipal Reviewer</option>
+                <option>Student / Researcher</option>
+              </select>
+              <button class="btn primary" id="profileSaveBtn" type="button">Update Profile</button>
+            </div>
+            <div class="panel">
+              <h3>Saved Data</h3>
+              <p class="muted">This prototype stores accounts and assessments in your browser local storage for a polished single-file experience.</p>
+              <div class="mini-actions">
+                <button class="btn secondary" id="loadBtn" type="button">Load Saved Assessment</button>
+                <button class="btn danger" id="clearDataBtn" type="button">Clear Local Data</button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    const THRESHOLD = 7.5;
+    const criteria = [
+      { label: "Seismic Zone Hazard", weight: 0.08, scores: [10,8,6,4,2,0], options: ["Low", "Very Low-Moderate", "Moderate", "Moderate-High", "High", "Very High"], locked: true },
+      { label: "Soil Condition", weight: 0.05, scores: [10,8,6,4,2,0], options: ["Stable Rock", "Stiff Soil", "Medium Stiff Soil", "Soft Soil", "Very Soft Soil", "Liquefiable Soil"], locked: true },
+      { label: "Building Use / Occupancy", weight: 0.02, scores: [10,8,7,6,4,2], options: ["Essential / Hospital (IV)", "High Occupancy", "Standard (III)", "Standard (II)", "Low Consequence (I)", "Unoccupied"], locked: true },
+      { label: "Symmetry / Regularity", weight: 0.20, scores: [10,8,6,4,2,0], options: ["Highly Regular", "Regular", "Minor Irregularities", "Moderate Irregularities", "Major Irregularities", "Severe Irregularity / Torsion Risk"] },
+      { label: "Lateral System Type", weight: 0.10, scores: [10,8,6,4,2,0], options: ["Ductile Dual System", "Ductile Frames", "Non-Ductile Shear Walls", "Standard Frames", "Moment Frames Only", "Non-Engineered System"] },
+      { label: "Soft Storey Risk", weight: 0.10, scores: [10,8,6,4,2,0], options: ["No Soft Storey", "Minor Stiffness Inconsistency", "Moderate Weak Storey", "Significant Weak Storey", "High Soft Storey Risk", "Extreme Soft Storey"] },
+      { label: "Material Ductility", weight: 0.10, scores: [10,8,6,4,2,0], options: ["High Ductility", "Good Ductility", "Standard Ductility", "Low Ductility", "Non-Ductile Material", "Poor Material"] },
+      { label: "Seismic Detailing", weight: 0.10, scores: [10,8,6,4,2,0], options: ["Full Confinement Detailing", "Excellent Detailing", "Code-Compliant Detailing", "Minimal Detailing", "Poor Detailing", "No Detailing"] },
+      { label: "Quality Control", weight: 0.15, scores: [10,8,6,4,2,0], options: ["Extensive Third-Party QC", "Standard Contractor QC", "Standard Code QC", "Periodic Inspection", "Informal QC", "No QC"] },
+      { label: "Diaphragm Rigidity / Integrity", weight: 0.10, scores: [10,8,7,6,4,2], options: ["Concrete Slab with Full Continuity", "Rigid Concrete Slab", "Pre-cast Slab with Shear Transfer", "Pre-cast Slab with Weak Connection", "Flexible Diaphragm", "Incomplete Diaphragm"] },
+      { label: "Foundation Anchorage", weight: 0.08, scores: [10,8,6,4,2,0], options: ["Continuous Ties and Anchors", "Good Anchorage", "Adequate Footing Ties", "Partial Anchorage", "Weak Anchorage", "Unverified Foundation"] },
+      { label: "Pounding / Adjacent Building Gap", weight: 0.05, scores: [10,8,6,4,2,0], options: ["Clear Separation", "Minor Interaction Possible", "Moderate Gap Concern", "Close Adjacent Structure", "Likely Pounding", "Severe Pounding Risk"] },
+      { label: "Non-Structural Component Restraint", weight: 0.05, scores: [10,8,6,4,2,0], options: ["Fully Braced Components", "Mostly Braced", "Critical Components Braced", "Partial Restraint", "Poor Restraint", "Unrestrained Hazards"] },
+      { label: "Evacuation and Redundancy", weight: 0.04, scores: [10,8,6,4,2,0], options: ["Multiple Protected Routes", "Good Route Redundancy", "Adequate Routes", "Limited Routes", "Congested / Vulnerable Routes", "No Reliable Route"] }
+    ];
+
+    const diagnostics = [
+      "Is the building located on a slope or near a retaining wall?",
+      "Are there visible shear cracks, corrosion, settlement, or column distress?",
+      "Are heavy tanks, equipment, parapets, or facade panels properly anchored?",
+      "Have previous earthquake repairs been documented and inspected?",
+      "Is there a vertical setback, transfer girder, open ground floor, or pilotis level?",
+      "Are exits, stairs, and emergency utilities expected to remain usable after shaking?"
+    ];
+
+    const retrofitCatalog = [
+      { effort: 0, action: "Hazard assumption is not directly retrofittable; use it for design demand." },
+      { effort: 0, action: "Soil condition is not directly retrofittable; consider geotechnical mitigation separately." },
+      { effort: 0, action: "Occupancy drives importance and acceptance criteria; do not optimize it away." },
+      { effort: 4, action: "Reduce plan or vertical irregularity, strengthen torsion-critical lines, and improve load-path continuity." },
+      { effort: 5, action: "Add or upgrade lateral-force-resisting elements such as shear walls, braced frames, or dual systems." },
+      { effort: 4, action: "Correct weak or open storey behavior with infill, bracing, jackets, or stiffness-balanced frames." },
+      { effort: 3, action: "Improve ductility through confinement, jacketing, connection retrofit, and brittle failure prevention." },
+      { effort: 3, action: "Upgrade detailing at plastic hinge zones, joints, lap splices, anchorage, and confinement regions." },
+      { effort: 2, action: "Increase inspection frequency, material testing, third-party review, and construction traceability." },
+      { effort: 3, action: "Strengthen diaphragm chords, collectors, shear transfer, and slab-to-wall/frame connections." },
+      { effort: 4, action: "Add foundation ties, anchors, grade beams, or underpinning where load transfer is uncertain." },
+      { effort: 2, action: "Provide separation joints, bumpers, local strengthening, or movement-compatible detailing." },
+      { effort: 1, action: "Brace ceilings, parapets, MEP equipment, tanks, cladding, and contents that can fall or block exits." },
+      { effort: 1, action: "Improve exit redundancy, emergency lighting, protected stairs, and post-event operational planning." }
+    ];
+
+    const state = {
+      user: null,
+      selected: Array(criteria.length).fill(2),
+      diagnostics: Array(diagnostics.length).fill("unknown")
+    };
+
+    const $ = (id) => document.getElementById(id);
+    const fmt = (n) => Number(n).toFixed(2);
+
+    function users() {
+      const saved = JSON.parse(localStorage.getItem("sro_users") || "[]");
+      if (!saved.some(u => u.email === "demo@seismic.local")) {
+        saved.push({ name: "Demo Engineer", email: "demo@seismic.local", password: "demo123", org: "Demo Lab", role: "Structural Engineer" });
+        localStorage.setItem("sro_users", JSON.stringify(saved));
+      }
+      return saved;
+    }
+
+    function setUsers(next) { localStorage.setItem("sro_users", JSON.stringify(next)); }
+    function toast(message) {
+      $("toast").textContent = message;
+      $("toast").classList.add("show");
+      setTimeout(() => $("toast").classList.remove("show"), 2200);
+    }
+
+    function currentScores() {
+      return criteria.map((c, i) => c.scores[state.selected[i]]);
+    }
+
+    function trs(scores = currentScores()) {
+      return scores.reduce((sum, score, i) => sum + score * criteria[i].weight, 0);
+    }
+
+    function normalizedTrs() {
+      const totalWeight = criteria.reduce((s, c) => s + c.weight, 0);
+      return trs() / totalWeight;
+    }
+
+    function optimize(target = THRESHOLD) {
+      const selected = [...state.selected];
+      const log = [];
+      let score = adjustedTrsFromSelected(selected);
+      let guard = 0;
+      while (score < target && guard < 20) {
+        guard += 1;
+        let best = -1;
+        let bestGain = 0;
+        criteria.forEach((c, i) => {
+          if (c.locked || selected[i] === 0) return;
+          const gain = (c.scores[0] - c.scores[selected[i]]) * c.weight;
+          if (gain > bestGain) { bestGain = gain; best = i; }
+        });
+        if (best === -1) break;
+        const before = criteria[best].options[selected[best]];
+        selected[best] = 0;
+        score = adjustedTrsFromSelected(selected);
+        log.push({
+          index: best,
+          criterion: criteria[best].label,
+          before,
+          after: criteria[best].options[0],
+          weight: criteria[best].weight,
+          effort: retrofitCatalog[best]?.effort || 2,
+          action: retrofitCatalog[best]?.action || "Improve this criterion to the best verified condition.",
+          score
+        });
+      }
+      return { selected, score, log };
+    }
+
+    function normalizedTrsFromSelected(selected) {
+      const totalWeight = criteria.reduce((s, c) => s + c.weight, 0);
+      const weighted = selected.reduce((sum, optionIndex, i) => sum + criteria[i].scores[optionIndex] * criteria[i].weight, 0);
+      return weighted / totalWeight;
+    }
+
+    function getModelInputs() {
+      const num = (id, fallback) => Number($(id)?.value || fallback);
+      return {
+        storeys: Math.max(1, num("storeys", 5)),
+        planArea: Math.max(50, num("planArea", 1200)),
+        yearBuilt: Math.min(new Date().getFullYear(), Math.max(1900, num("yearBuilt", 2005))),
+        codeEra: Number($("codeEra")?.value || 0),
+        faultDistance: Number($("faultDistance")?.value || -0.08),
+        importanceFactor: Number($("importanceFactor")?.value || 0),
+        groundFailure: Number($("groundFailure")?.value || -0.08),
+        documentationConfidence: Number($("documentationConfidence")?.value || 70),
+        inspectionConfidence: Number($("inspectionConfidence")?.value || 75)
+      };
+    }
+
+    function modelAdjustment() {
+      const m = getModelInputs();
+      const currentYear = new Date().getFullYear();
+      const age = currentYear - m.yearBuilt;
+      const agePenalty = age > 60 ? -0.45 : age > 40 ? -0.28 : age > 25 ? -0.14 : 0.04;
+      const heightPenalty = m.storeys >= 20 ? -0.38 : m.storeys >= 12 ? -0.24 : m.storeys >= 8 ? -0.12 : 0.04;
+      const footprintPenalty = m.planArea > 20000 ? -0.14 : m.planArea > 8000 ? -0.08 : m.planArea < 250 ? -0.04 : 0;
+      const confidencePenalty = ((100 - m.documentationConfidence) + (100 - m.inspectionConfidence)) / 200 * -0.45;
+      const total = agePenalty + heightPenalty + footprintPenalty + m.codeEra + m.faultDistance + m.importanceFactor + m.groundFailure + confidencePenalty;
+      return { ...m, age, agePenalty, heightPenalty, footprintPenalty, confidencePenalty, total };
+    }
+
+    function adjustedTrsFromSelected(selected) {
+      const base = normalizedTrsFromSelected(selected);
+      const adjusted = base + modelAdjustment().total;
+      return Math.max(0, Math.min(10, adjusted));
+    }
+
+    function adjustedTrs() {
+      return adjustedTrsFromSelected(state.selected);
+    }
+
+    function confidenceScore() {
+      const m = getModelInputs();
+      return Math.round((m.documentationConfidence * 0.48) + (m.inspectionConfidence * 0.52));
+    }
+
+    function riskIndex() {
+      const scoreRisk = (10 - adjustedTrs()) * 10;
+      const highRiskPenalty = currentScores().filter(v => v <= 4).length * 3;
+      const confidencePenalty = (100 - confidenceScore()) * 0.35;
+      return Math.round(Math.max(0, Math.min(100, scoreRisk + highRiskPenalty + confidencePenalty)));
+    }
+
+    function performanceBand(score = adjustedTrs()) {
+      if (score >= 8.8) return "Operational";
+      if (score >= 7.5) return "Life Safe";
+      if (score >= 6.0) return "Retrofit";
+      if (score >= 4.5) return "High Risk";
+      return "Critical";
+    }
+
+    function estimateRetrofitEffort(plan = optimize()) {
+      const areaFactor = Math.sqrt(getModelInputs().planArea / 1000);
+      return plan.log.reduce((sum, item) => sum + (retrofitCatalog[item.index]?.effort || 2) * areaFactor, 0);
+    }
+
+    function buildQuestions() {
+      $("questions").innerHTML = criteria.map((c, i) => `
+        <article class="question">
+          <div class="question-header">
+            <h4>${i + 1}. ${c.label}</h4>
+            <span class="badge">${Math.round(c.weight * 100)}% weight${c.locked ? " site" : ""}</span>
+          </div>
+          <select data-criterion="${i}" aria-label="${c.label}">
+            ${c.options.map((option, idx) => `<option value="${idx}">${idx + 1}. ${option} - Score ${c.scores[idx]}</option>`).join("")}
+          </select>
+          <p class="hint">${c.locked ? "Site or occupancy input. Optimizer preserves this assumption." : "Structural design input. Optimizer can recommend upgrading it."}</p>
+        </article>
+      `).join("");
+
+      document.querySelectorAll("[data-criterion]").forEach(select => {
+        select.value = state.selected[Number(select.dataset.criterion)];
+        select.addEventListener("change", () => {
+          state.selected[Number(select.dataset.criterion)] = Number(select.value);
+          updateAll();
+        });
+      });
+    }
+
+    function buildDiagnostics() {
+      $("diagnostics").innerHTML = diagnostics.map((q, i) => `
+        <article class="question">
+          <div class="question-header"><h4>${q}</h4><span class="badge">diagnostic</span></div>
+          <select data-diagnostic="${i}">
+            <option value="unknown">Unknown / needs inspection</option>
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
+          </select>
+        </article>
+      `).join("");
+      document.querySelectorAll("[data-diagnostic]").forEach(select => {
+        select.addEventListener("change", () => {
+          state.diagnostics[Number(select.dataset.diagnostic)] = select.value;
+          updateAll();
+        });
+      });
+    }
+
+    function updateAll() {
+      const score = normalizedTrs();
+      const adjusted = adjustedTrs();
+      const highRisk = currentScores().filter(v => v <= 4).length;
+      const plan = optimize(Number($("targetPerformance")?.value || THRESHOLD));
+      $("metricTrs").textContent = fmt(score);
+      $("metricRiskIndex").textContent = riskIndex();
+      $("metricBand").textContent = performanceBand(adjusted);
+      $("metricConfidence").textContent = `${confidenceScore()}%`;
+      $("scoreValue").textContent = fmt(adjusted);
+      $("scoreRing").style.setProperty("--score", Math.max(0, Math.min(100, adjusted * 10)));
+      $("statusBox").textContent = adjusted >= THRESHOLD ? "Meets adjusted approval safety threshold" : "Needs seismic improvement";
+      $("statusBox").className = `status ${adjusted >= THRESHOLD ? "safe" : "fail"}`;
+      $("documentationConfidenceValue").textContent = `${getModelInputs().documentationConfidence}%`;
+      $("inspectionConfidenceValue").textContent = `${getModelInputs().inspectionConfidence}%`;
+      renderBars();
+      renderRecommendations(plan);
+      renderReport();
+      renderAdvancedModel(plan, highRisk);
+    }
+
+    function renderBars() {
+      $("scoreBars").innerHTML = criteria.map((c, i) => {
+        const score = c.scores[state.selected[i]];
+        return `<div class="bar-row">
+          <div class="bar-label" title="${c.label}">${c.label}</div>
+          <div class="bar-track"><div class="bar-fill" style="width:${score * 10}%"></div></div>
+          <div class="bar-score">${score}/10</div>
+        </div>`;
+      }).join("");
+    }
+
+    function renderRecommendations(plan) {
+      if (adjustedTrs() >= THRESHOLD) {
+        $("recommendations").innerHTML = `<div class="rec">The current design meets the 7.5 approval threshold. Consider scenario testing for higher performance targets.</div>`;
+        return;
+      }
+      if (!plan.log.length) {
+        $("recommendations").innerHTML = `<div class="rec">The target cannot be reached with structural upgrades alone. Recheck hazard, soil, and occupancy assumptions.</div>`;
+        return;
+      }
+      $("recommendations").innerHTML = plan.log.map((item, idx) => `
+        <div class="rec"><strong>Step ${idx + 1}: ${item.criterion}</strong><br>
+        Change "${item.before}" to "${item.after}". New projected adjusted TRS: ${fmt(item.score)}.<br>
+        ${item.action}</div>
+      `).join("");
+    }
+
+    function renderAdvancedModel(plan, highRisk) {
+      const adjusted = adjustedTrs();
+      const model = modelAdjustment();
+      const band = performanceBand(adjusted);
+      const risk = riskIndex();
+      const effort = estimateRetrofitEffort(plan);
+      const card = $("advancedRiskCard");
+      $("adjustedScore").textContent = fmt(adjusted);
+      $("advancedVerdict").textContent = `${band} performance band, risk index ${risk}/100, ${plan.log.length} priority upgrade${plan.log.length === 1 ? "" : "s"}.`;
+      card.className = `risk-card ${adjusted >= 7.5 ? "safe" : adjusted >= 6 ? "watch" : "critical"}`;
+      $("modelInsights").innerHTML = [
+        `<div class="insight"><strong>Base weighted TRS:</strong> ${fmt(normalizedTrs())}. Advanced modifiers shift it by ${fmt(model.total)} based on age, height, site, code era, and confidence.</div>`,
+        `<div class="insight"><strong>Primary exposure drivers:</strong> ${model.storeys} storeys, ${model.age} years since construction/retrofit, ${model.planArea.toLocaleString()} m2 floor plate, and selected ground/fault conditions.</div>`,
+        `<div class="insight"><strong>Inspection reliability:</strong> confidence is ${confidenceScore()}%. Lower documentation or inspection confidence increases the risk index and should trigger field verification.</div>`,
+        `<div class="insight"><strong>Retrofit effort index:</strong> ${fmt(effort)}. This is a relative planning indicator, not a cost estimate; use it to compare upgrade packages.</div>`,
+        `<div class="insight"><strong>High-risk criteria:</strong> ${highRisk} item${highRisk === 1 ? "" : "s"} scored 4 or below. These should receive engineering review before approval.</div>`
+      ].join("");
+    }
+
+    function renderReport() {
+      const scores = currentScores();
+      $("reportRows").innerHTML = criteria.map((c, i) => `
+        <tr>
+          <td>${c.label}</td>
+          <td>${c.options[state.selected[i]]}</td>
+          <td>${scores[i]}</td>
+          <td>${fmt(c.weight)}</td>
+          <td>${fmt(scores[i] * c.weight)}</td>
+        </tr>
+      `).join("");
+      $("reportText").value = makeReportText();
+    }
+
+    function makeReportText() {
+      const score = normalizedTrs();
+      const adjusted = adjustedTrs();
+      const model = modelAdjustment();
+      const plan = optimize();
+      const project = $("projectName").value || "Untitled Building Assessment";
+      const location = $("projectLocation").value || "Location not specified";
+      const rows = criteria.map((c, i) => `- ${c.label}: ${c.options[state.selected[i]]} | Score ${c.scores[state.selected[i]]} | Weight ${fmt(c.weight)}`).join("\n");
+      const diag = diagnostics.map((q, i) => `- ${q} ${state.diagnostics[i]}`).join("\n");
+      const recs = plan.log.map((r, i) => `${i + 1}. Upgrade ${r.criterion}: ${r.before} -> ${r.after}; projected adjusted TRS ${fmt(r.score)}; action: ${r.action}`).join("\n") || "No mandatory upgrades for the 7.5 threshold.";
+      return `SEISMIC RESILIENCE OPTIMIZER REPORT
+Project: ${project}
+Location: ${location}
+Building Type: ${$("buildingType").value}
+Assessor: ${state.user?.name || ""}
+Base TRS: ${fmt(score)} / 10
+Adjusted TRS: ${fmt(adjusted)} / 10
+Performance Band: ${performanceBand(adjusted)}
+Risk Index: ${riskIndex()} / 100
+Model Confidence: ${confidenceScore()}%
+Verdict: ${adjusted >= THRESHOLD ? "SAFE for adjusted approval threshold" : "FAILED adjusted threshold; retrofit recommended"}
+
+ADVANCED MODEL INPUTS
+- Storeys: ${model.storeys}
+- Floor Plate Area: ${model.planArea} m2
+- Building Age: ${model.age} years
+- Modifier Total: ${fmt(model.total)}
+- Documentation Confidence: ${model.documentationConfidence}%
+- Inspection Confidence: ${model.inspectionConfidence}%
+- Relative Retrofit Effort Index: ${fmt(estimateRetrofitEffort(plan))}
+
+WEIGHTED CRITERIA
+${rows}
+
+DIAGNOSTIC QUESTIONS
+${diag}
+
+RECOMMENDATIONS
+${recs}
+
+NOTES
+${$("notes").value || "No inspection notes entered."}`;
+    }
+
+    function saveAssessment() {
+      if (!state.user) return;
+      const payload = {
+        selected: state.selected,
+        diagnostics: state.diagnostics,
+        projectName: $("projectName").value,
+        projectLocation: $("projectLocation").value,
+        buildingType: $("buildingType").value,
+        notes: $("notes").value,
+        modelInputs: getModelInputs(),
+        savedAt: new Date().toISOString()
+      };
+      localStorage.setItem(`sro_assessment_${state.user.email}`, JSON.stringify(payload));
+      $("projectStamp").textContent = `Saved ${new Date(payload.savedAt).toLocaleString()}`;
+      toast("Assessment saved");
+    }
+
+    function loadAssessment() {
+      if (!state.user) return false;
+      const raw = localStorage.getItem(`sro_assessment_${state.user.email}`);
+      if (!raw) return false;
+      const saved = JSON.parse(raw);
+      state.selected = saved.selected || state.selected;
+      state.diagnostics = saved.diagnostics || state.diagnostics;
+      $("projectName").value = saved.projectName || "";
+      $("projectLocation").value = saved.projectLocation || "";
+      $("buildingType").value = saved.buildingType || $("buildingType").value;
+      $("notes").value = saved.notes || "";
+      if (saved.modelInputs) {
+        Object.entries(saved.modelInputs).forEach(([key, value]) => {
+          const field = $(key);
+          if (field) field.value = value;
+        });
+      }
+      $("projectStamp").textContent = saved.savedAt ? `Saved ${new Date(saved.savedAt).toLocaleString()}` : "Loaded saved assessment";
+      buildQuestions();
+      buildDiagnostics();
+      document.querySelectorAll("[data-diagnostic]").forEach((select, i) => select.value = state.diagnostics[i]);
+      updateAll();
+      return true;
+    }
+
+    function login(user) {
+      state.user = user;
+      sessionStorage.setItem("sro_session", user.email);
+      $("authShell").classList.add("hidden");
+      $("appShell").classList.remove("hidden");
+      $("userName").textContent = user.name;
+      $("userEmail").textContent = user.email;
+      $("profileName").value = user.name;
+      $("profileOrg").value = user.org || "";
+      $("profileRole").value = user.role || "Structural Engineer";
+      buildQuestions();
+      buildDiagnostics();
+      loadAssessment();
+      updateAll();
+    }
+
+    document.querySelectorAll("[data-auth-tab]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll("[data-auth-tab]").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        $("loginForm").classList.toggle("hidden", btn.dataset.authTab !== "login");
+        $("registerForm").classList.toggle("hidden", btn.dataset.authTab !== "register");
+      });
+    });
+
+    $("loginForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const email = $("loginEmail").value.trim().toLowerCase();
+      const password = $("loginPassword").value;
+      const user = users().find(u => u.email === email && u.password === password);
+      if (!user) { $("loginError").textContent = "Invalid email or password."; return; }
+      $("loginError").textContent = "";
+      login(user);
+    });
+
+    $("registerForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const next = users();
+      const email = $("registerEmail").value.trim().toLowerCase();
+      if (next.some(u => u.email === email)) { $("registerError").textContent = "An account already exists for this email."; return; }
+      const user = { name: $("registerName").value.trim(), email, password: $("registerPassword").value, org: "", role: "Structural Engineer" };
+      next.push(user);
+      setUsers(next);
+      login(user);
+    });
+
+    document.querySelectorAll(".nav button").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".nav button").forEach(b => b.classList.remove("active"));
+        document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+        btn.classList.add("active");
+        $(btn.dataset.section).classList.add("active");
+        $("sectionTitle").textContent = btn.textContent;
+      });
+    });
+
+    [
+      "projectName", "projectLocation", "buildingType", "notes", "targetPerformance",
+      "storeys", "planArea", "yearBuilt", "codeEra", "faultDistance", "importanceFactor",
+      "groundFailure", "documentationConfidence", "inspectionConfidence"
+    ].forEach(id => {
+      ["input", "change"].forEach(type => {
+        document.addEventListener(type, (event) => {
+          if (event.target.id === id) updateAll();
+        });
+      });
+    });
+
+    $("optimizeBtn").addEventListener("click", () => {
+      const plan = optimize();
+      state.selected = plan.selected;
+      buildQuestions();
+      updateAll();
+      toast(`Applied ${plan.log.length} recommended upgrade${plan.log.length === 1 ? "" : "s"}`);
+    });
+
+    $("bestCaseBtn").addEventListener("click", () => {
+      state.selected = state.selected.map((value, i) => criteria[i].locked ? value : 0);
+      buildQuestions();
+      updateAll();
+      toast("Structural criteria set to best case");
+    });
+
+    $("runScenarioBtn").addEventListener("click", () => {
+      const target = Number($("targetPerformance").value);
+      const penalty = Number($("aftershockExposure").value);
+      const plan = optimize(target);
+      const projected = Math.max(0, plan.score + penalty);
+      $("scenarioResult").innerHTML = `
+        <div class="rec"><strong>Target:</strong> ${fmt(target)} TRS</div>
+        <div class="rec"><strong>Projected after scenario:</strong> ${fmt(projected)} TRS</div>
+        <div class="rec"><strong>Upgrade count:</strong> ${plan.log.length}</div>
+        <div class="rec">${projected >= target ? "Scenario target is achievable with the selected retrofit strategy." : "Scenario remains below target; consider improving site mitigation, foundation anchorage, and lateral system performance."}</div>
+      `;
+    });
+
+    $("saveBtn").addEventListener("click", saveAssessment);
+    $("loadBtn").addEventListener("click", () => toast(loadAssessment() ? "Saved assessment loaded" : "No saved assessment found"));
+    $("exportBtn").addEventListener("click", async () => {
+      const text = makeReportText();
+      try {
+        await navigator.clipboard.writeText(text);
+        toast("Report copied to clipboard");
+      } catch {
+        $("reportText").focus();
+        $("reportText").select();
+        toast("Report ready to copy");
+      }
+    });
+
+    $("resetBtn").addEventListener("click", () => {
+      state.selected = Array(criteria.length).fill(2);
+      state.diagnostics = Array(diagnostics.length).fill("unknown");
+      $("storeys").value = 5;
+      $("planArea").value = 1200;
+      $("yearBuilt").value = 2005;
+      $("codeEra").value = 0;
+      $("faultDistance").value = -0.08;
+      $("importanceFactor").value = 0;
+      $("groundFailure").value = -0.08;
+      $("documentationConfidence").value = 70;
+      $("inspectionConfidence").value = 75;
+      buildQuestions();
+      buildDiagnostics();
+      updateAll();
+      toast("Inputs reset");
+    });
+
+    $("logoutBtn").addEventListener("click", () => {
+      sessionStorage.removeItem("sro_session");
+      state.user = null;
+      $("appShell").classList.add("hidden");
+      $("authShell").classList.remove("hidden");
+      toast("Logged out");
+    });
+
+    $("profileSaveBtn").addEventListener("click", () => {
+      const next = users().map(u => {
+        if (u.email !== state.user.email) return u;
+        return { ...u, name: $("profileName").value.trim() || u.name, org: $("profileOrg").value.trim(), role: $("profileRole").value };
+      });
+      setUsers(next);
+      const user = next.find(u => u.email === state.user.email);
+      state.user = user;
+      $("userName").textContent = user.name;
+      toast("Profile updated");
+    });
+
+    $("clearDataBtn").addEventListener("click", () => {
+      if (!state.user) return;
+      localStorage.removeItem(`sro_assessment_${state.user.email}`);
+      toast("Saved assessment cleared");
+    });
+
+    users();
+    const sessionEmail = sessionStorage.getItem("sro_session");
+    const sessionUser = users().find(u => u.email === sessionEmail);
+    if (sessionUser) login(sessionUser);
+  </script>
+</body>
+</html>
