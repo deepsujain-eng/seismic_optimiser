@@ -1,7 +1,9 @@
 # 🏗️ Seismic Resilience Optimizer
 
+
 A comprehensive web-based building assessment platform that evaluates seismic vulnerability, calculates resilience scores, and provides prioritized retrofit recommendations for safer structures.
 
+Site is live at:  https://deepsujain-eng.github.io/seismic_optimiser/
 ## 🌍 Overview
 
 Seismic Resilience Optimizer helps engineers, architects, researchers, and building owners assess the earthquake resilience of structures using weighted engineering criteria, advanced risk modeling, and scenario-based analysis.
