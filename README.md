@@ -107,17 +107,26 @@ git clone https://github.com/YOUR_USERNAME/seismic-resilience-optimizer.git
 
 ## 📸 Screenshots
 
-### Login Page
-![Login](login.png)
+### Home Page
+![Home Page](screenshots/home_page_so.png)
 
-### Assessment Dashboard
-![Dashboard](dashboard.png)
+### Overview Page
+![Overview Page](screenshots/overview_page_so.png)
 
-### Risk Analysis
-![Risk Analysis](risk-analysis.png)
+### Assessment Page
+![Assessment Page](screenshots/assesment_page_so.png)
 
-### Generated Report
-![Report](report.png)
+### Scenario Page
+![Scenario Page](screenshots/senario_page_so.png)
+
+### Advanced Model
+![Advanced Model](screenshots/advanced_model_so.png)
+
+### Reports Page
+![Reports Page](screenshots/reports_so.png)
+
+### Profile Page
+![Profile Page](screenshots/profile_os.png)
 
 ---
 
