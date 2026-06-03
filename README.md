@@ -81,7 +81,7 @@ The platform generates a Total Resilience Score (TRS), identifies critical weakn
 ### Clone Repository
 
 ```bash
-git clone https://github.com/deepsujain-eng/seismic_optimiser.git
+git clone https://github.com/YOUR_USERNAME/seismic_optimiser.git
 ```
 
 ### Run Project
